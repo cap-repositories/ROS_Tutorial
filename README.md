@@ -254,7 +254,7 @@ donde.
 
 ahora usemos este comando para mover el robot. en la terminal escribe:
 ```
-rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[0.6, 0.0, 0.0]' '[0.0, 0.0, 2.0]'
+rostopic pub -1 /cmd_vel geometry_msgs/Twist -- '[0.6, 0.0, 0.0]' '[0.0, 0.0, 2.0]'
 ```
 
 El atributo ```-1``` indica que envia un solo mensaje y termina la comunicacion.
