@@ -33,7 +33,7 @@ $ echo $ROS_PACKAGE_PATH
 /home/user/catkin_ws/src:/home/user/simulation_ws/src:/home/simulations/public_sim_ws/src:/opt/ros/kinetic/share
 ```
 
-## Actividad 1: Navegar por el sistema de archivos ROS
+## Navegar por el sistema de archivos ROS
 
 
 Los paquetes son la unidad de organización principales de ROS. Cada paquete puede contener bibliotecas, ejecutables, scripts u otros elementos. Los paquetes estan asociados a un manifiesto (package.xml) el cual contiene descripción del paquete y sirve para definir dependencias entre paquetes y para capturar metainformación sobre el paquete como versión, mantenedor, licencia, etc.
@@ -89,7 +89,7 @@ las dependencias son otros paquetes que nuestro paquete va a usar.
 
 pruebe crear un paquete llamado rospuj con rospy como dependencia.
 
-### aplicar cambios al workspace
+### Aplicar cambios al workspace
 cadaque se realiza un cambio en el paquete(o se crea un paquete) es necesario ejecutar los siguietnes comandos para que estos cambios sean tenidos en cuenta en la ejecucion del paquete. Esto es debido a que ROS no leer directamente los archivos sino que editamos sino sus correspondientes ejecutables.
 ```
 $ cd ~/catkin_ws
@@ -309,9 +309,9 @@ ahora en el ROS DS vamos a la pestaña Tools y seleccionamos IDE, con esto se ab
 
 Ahora abrimos el archivos y pegamos lo siguiente:
 ```
-#!/usr/bin/env python
-import rospy
-from sensor_msgs.msg import LaserScan
+#!/usr/bin/env python  
+import rospy  #todo nodo de ROS en python debe importar rospy
+from sensor_msgs.msg import LaserScan  #importa los tipos de mensaje
 from geometry_msgs.msg import Twist
 # le indicamos a rospy el nombre del nodo.
 rospy.init_node('evadir1')  #con este nombre se registra en el rosmaster
@@ -320,7 +320,7 @@ rospy.init_node('evadir1')  #con este nombre se registra en el rosmaster
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1) 
 
 #rospy.rate() ndica la frecuencia en Hz con la que se va a repetir el loop de control.
-rate = rospy.rate(2)
+rate = rospy.Rate(2)
 
 #crea un objeto para guardar el mensaje de tipo Twist
 vel = Twist()
@@ -335,7 +335,7 @@ pub.publish(vel)
 
 #creamos la funcion que haga girar el robot cuando detecte un objeto
 def turn(msg): #el unico argumento es el arreglo de lecturas del laser
-    d = msg.range[0] #optiene la lectura de laser en la primera posicion del arreglo
+    d = msg.ranges[0] #optiene la lectura de laser en la primera posicion del arreglo
     # d es la distancia detectada por el laser junto en frente del robot en m
     if d < 0.7:  #se hay un bjeto muy cerca, gira
         vel.angular.z = 0.5
@@ -349,9 +349,37 @@ se crea una suscripcion al topic /scan (medidor laser de 360 grados.
 el segundo argumento es el tipo de mensaje LaserScan (se importo)
 el tercer argumento es la funcion que atiende el mensaje recibido "callback"
 """
+
 rospy.Subscriber("/scan", LaserScan, turn)
+
 #inicia la ejecucion periodica cada 0.5s segun se indique en rospy.rate
 rospy.spin()
 ```
+
+Ahora se debe hacer ejecutable el script, para esto escribimos en la terminal:
+```
+$ chmod +x mydriver.py
+```
+
+### reconstruir el workspace
+Cada que se realiza un cambio en los paquetes se debe reconstruir el workspace, en este caso se a creado (o editado) un nodo.
+
+```
+$ cd ~/catkin_ws
+$ catkin_make 
+$ source ./devel/setup.bash
+```
+Finalmente, ejecutamos en nodo utilizando ```rosrun```.
+
+```
+rosrun rospuj mydriver.py
+```
+Podra ver en el simulador (si todo sale bien) que el robot se mueve y gira cuando detecta algun obstaculo.
+
+## Actividad 1
+
+Modifique el archivo mydriver.py para que el robot mejore la evacion de obstaculos utilizando un rango mayor del LaserScan y haciendo que gire mas rapido cuanto mas cerca este del obstaculo.
+
+
 
 
