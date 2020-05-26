@@ -266,5 +266,92 @@ Ahora podemos introducir la comunicacion por servicios en ROS con un servicio qu
 $ rosservice call /gazebo/reset_world
 $ rosservice call /gazebo/reset_simulation
 ```
+si no funcionan, es necesario reiniciar el simulador.
+
+## Comunicacion por medio de servicios
+La comunicacion por medio de servicios utiliza una arquitectura de tipo Cliente/Servidor en la cual un nodo genera un solicitud (**request**) y el otro responde (**response**).
+
+Al igual que con rostopic, tenemos la funcion rosservice que permite interactuar con los servicios de los nodos desde la terminal.
+
+iniciemos con la funcion de ayuda:
+```
+$ rosservice -h
+```
+esto depliega todas las funciones del comando rosservice.
+
+ahora podemos utilizar tambien rosservice list para ver los servicios disponibles:
+```
+$ rosservice list
+```
+En la lista que se despliega vemos que aparecen los servicios /gazebo/reset_world y /gazebo/reset_simulation que usamos en el punto anterior para reiniciar la simulacion. Para usar los servicios, deben llamarse con el mismo nombre que aparecen en esta lista. 
+
+para llamar los servicios desde la terminal, usamos el comando ```rosservice call``` con el nomnbre del servicio. Esemos esto para obtener los Loggers del estado del robot.
+```
+$ rosservice call /robot_state_publisher/get_loggers
+```
+Para entender el formato de los datos que este servicio respondia podemos usar la funcion ```rosservice type [service]``` 
+```
+$ rosservice type /robot_state_publisher/get_loggers | rossrv show
+```
+Que nos muestra que el mensaje de respuesta es un lintado de logger con el nombre y el nivel.
+
+## Crear un nodo en python
+Ahora ya entramos a la parte activa del tutorial, la idea de este seccion es crear un script que funcione como un nodo de ROS y se encarge de manejar el robot para que evada ostaculos.
+
+lo primero que debemos hacer es crear una carpeta dentro de nuestro paquete /rospuj, en esta carpeta creamos el archivo de python.
+
+desde la terminal podemos crear la carpeta con:
+```
+$ roscd rospuj
+$ mkdir scripts
+```
+ahora en el ROS DS vamos a la pestaña Tools y seleccionamos IDE, con esto se abre un editor donde podemos seleccionar la carpeta que creamos, damos click derecho y seleccionamos *New File*, le ponemos el nombre *mydriver.py* y le damos OK.
+
+Ahora abrimos el archivos y pegamos lo siguiente:
+```
+#!/usr/bin/env python
+import rospy
+from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import Twist
+# le indicamos a rospy el nombre del nodo.
+rospy.init_node('evadir1')  #con este nombre se registra en el rosmaster
+
+#Creamos un objeto para publicar en el topic /cmd_vel, Twist es el tipo de mensaje
+pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1) 
+
+#rospy.rate() ndica la frecuencia en Hz con la que se va a repetir el loop de control.
+rate = rospy.rate(2)
+
+#crea un objeto para guardar el mensaje de tipo Twist
+vel = Twist()
+
+#Se da un valor inicial a la velocidad del robot y la distancia del sensor
+vel.linear.x = 0.3
+vel.angular.z = 0
+d = 0.1
+
+#publica a velocidad (se envia al robot)
+pub.publish(vel)
+
+#creamos la funcion que haga girar el robot cuando detecte un objeto
+def turn(msg): #el unico argumento es el arreglo de lecturas del laser
+    d = msg.range[0] #optiene la lectura de laser en la primera posicion del arreglo
+    # d es la distancia detectada por el laser junto en frente del robot en m
+    if d < 0.7:  #se hay un bjeto muy cerca, gira
+        vel.angular.z = 0.5
+        vel.linear.x = 0
+    else:  #si no, avanza
+        vel.linear.x = 0.3
+        vel.angular.z = 0
+    pub.publish(vel) #actualiza la velocidad en el robot
+"""
+se crea una suscripcion al topic /scan (medidor laser de 360 grados.
+el segundo argumento es el tipo de mensaje LaserScan (se importo)
+el tercer argumento es la funcion que atiende el mensaje recibido "callback"
+"""
+rospy.Subscriber("/scan", LaserScan, turn)
+#inicia la ejecucion periodica cada 0.5s segun se indique en rospy.rate
+rospy.spin()
+```
 
 
