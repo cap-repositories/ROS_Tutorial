@@ -98,7 +98,7 @@ $ . ~/catkin_ws/devel/setup.bash
 $ source /opt/ros/kinetic/setup.bash  
 ```
 
-## Iteraccion entre nodos
+## Nodos
 Conceptos basicos de la comunicacion en ROS:
 
 * Nodos (node): un nodo es un ejecutable que utiliza ROS para comunicarse con otros nodos.
@@ -108,7 +108,6 @@ Conceptos basicos de la comunicacion en ROS:
 * rosout: equivalente ROS de stdout / stderr (funciones de terminal de linux)
 * roscore: Master + rosout + servidor de parámetros (el servidor de parámetros se presentará más adelante)
 
-### Nodos
 Un nodo es un archivo ejecutable dentro de un paquete ROS. Los nodos ROS utilizan **rospy** o **roscpp** para comunicarse con otros nodos. Los nodos pueden publicar o suscribirse a un tema. Los nodos también pueden proporcionar o usar un Servicio.
 
 ### roscore
@@ -156,10 +155,116 @@ Aparecen los siguentes nodos.
 ```
 Estos nodos iniciaron automaticamente, pero otros nodos se pueden inciar desde la terminal usando ```rosrun```, veremos mas adelante como usar este comando con los nodos que creamos.
 
-### Comunicacion por medio de topics
+## Comunicacion por medio de topics
 ROS permite dos tipos de comunicaciones entre nodos, *Topics* y *Services*, vamos a enfocarnos primero en los topics, los servicios los estudiatemos a continuacion.
 
-Los *Topics* permiten una comunicacion tipo PUB/SUB (publicacion - suscripcion) en la cual un nodo crea un tema (topic) y otros nodos se suscriben a el, cada que el nodo creador publique un mensaje en el topic, todos los nodos suscritos pueden leerlo.
+Los *Topics* permiten una comunicacion tipo PUB/SUB (publicacion - suscripcion) en la cual un nodo crea un tema (topic) y otros nodos se suscriben a el, cada que se publique un mensaje en el topic, todos los nodos suscritos pueden leerlo.
 
+El comando base para trabajar con *Topics* es **rostopic**. Un primer uso de este comando es la funcion de ayuda para leer otras funciones y comandos, en una nueva terminal escriba lo siguiente:
+```
+$ rostopic -h
+```
+veremos con detalle algunos de estos comandos.
+
+### rostopic echo
+```rostopic echo``` permite ver en la terminal los mensajes publicados en un tema.
+
+Para conocer los temas que estan abiertos podemos escribir el siguiente comando:
+```
+$ rostopic list
+```
+Esto desplega una lista de los temas abiertos, ahora vamos a leer el tema */scan* el cual es usado por el robot para publicar constantemente los valores leidos por el sensor laser de 360 grados.
+
+```
+$ rostopic echo /scan
+```
+No te alarmes!, apareceran muchas lineas de informacion, es normal solo tienes que presionar *Ctrl + Z* para dejar de leer.
+
+Esto nos muestra un ejemplo de un mensaje publicado constantemente en un tema. Para usar esa informacion es necesario crear una suscripcion, eso lo haremos mas adelante.
+
+### Tipos de mensaje
+los temas transmiten mesajes, un mensaje tiene una estructura de datos compleja que puede ir desde un valor unico hasta un conjunto de datos de diferentes tipos uncluidos areglos y listas.
+
+Es necesario conocer el tipo de mensaje asociado a un tema para poder usarlo, ya sea para interpretar los datos y usarlos en una aplicacion o para poder enviar un mensaje con la estructura correcta.
+
+Para conocer el tipo de mensaje asociado a un tema, se usa el comando ```rostopic type [topic]```. Podemos usarlo con el tema ```/scan``` asi:
+
+```
+$ rostopic type /scan
+# sensor_msgs/LaserScan
+```
+Ahora podemos usar ```rosmsg show [message topic]``` para conocer la estructura detallada del mensaje asi:
+```
+$ rosmsg show sensor_msgs/LaserScan
+```
+Respuesta:
+```
+std_msgs/Header header
+  uint32 seq
+  time stamp
+  string frame_id
+float32 angle_min
+float32 angle_max
+float32 angle_increment
+float32 time_increment
+float32 scan_time
+float32 range_min
+float32 range_max
+float32[] ranges
+float32[] intensities
+```
+Estos muestra que hay varios datos de los cuales nos puede interesar que el dato ```ranges``` es un arreglo de datos tipo float32, este dato contiene los valores leidos por el sensor desde *angle_min* a *angle_max aumentando* lo indicado en *angle_increment*.
+
+Como otro ejemplo, podemos revisar la estructura del tema */cmd_vel*, este tema es usado para enviar mensajes de movimiento al robot.
+```
+$ rostopic type /cmd_vel
+```
+respuesta:
+```
+geometry_msgs/Twist
+```
+Ahora buscamos la estructura del mensaje:
+```
+$ rosmsg show geometry_msgs/Twist
+```
+Respuesta:
+```
+geometry_msgs/Vector3 linear
+  float64 x
+  float64 y
+  float64 z
+geometry_msgs/Vector3 angular
+  float64 x
+  float64 y
+  float64 z
+```
+Esto corresponde a un mensaje del tipo: '[x, y, z]' '[x, y, z]' donde el primer vector es la velocidad y el segundo la rotacion.
+
+### rostopic pub
+el comando ```rostopic pub``` permite escribir un mensaje en un tema desde la terminal.
+
+La sintaxis del comando es:
+```
+rostopic pub [topic] [msg_type] [args]
+```
+donde.
+* [topic] es el nombre del tema tal como aparece al usar ```rostopic list```
+* [msg_type] es el tipo de mensaje tal como aparece al usar ```rostopic type```
+* [args] es el contenido del mesaje que debe tener la misma estructura mostra al usar ```rosmsg show```
+
+ahora usemos este comando para mover el robot. en la terminal escribe:
+```
+rostopic pub -1 /turtle1/cmd_vel geometry_msgs/Twist -- '[0.6, 0.0, 0.0]' '[0.0, 0.0, 2.0]'
+```
+
+El atributo ```-1``` indica que envia un solo mensaje y termina la comunicacion.
+
+En el simulador podra ver como el robot inicia su movimiento donde '[0.6, 0.0, 0.0]' indica una velocidad lineal en X y '[0.0, 0.0, 2.0]' una velocidad de rotacion en Z. Ahora tome un tiempo para jugar un poco con el robot cambiando estos valores.
+
+Ahora podemos introducir la comunicacion por servicios en ROS con un servicio que permite reiniciar la simulacion, si el robot se perdio y se estrello, intente reiniciar con alguno de estos comandos:
+```
+$ rosservice call /gazebo/reset_world
+$ rosservice call /gazebo/reset_simulation
+```
 
 
