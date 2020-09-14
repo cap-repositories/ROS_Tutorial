@@ -1,385 +1,624 @@
 # Tutorial ROS - Robotica - PUJC
 
-Bienvenido al tutorial de ROS para el curso de robotica en la Pontificia Universidad Javeriana, para iniciar debe crear una cuenta en https://www.theconstructsim.com/rds-ros-development-studio/ y abrir un nuevo Rosject (project) con la configuracion basica.
+Bienvenido al tutorial de **ROS** para el curso de robotica en la Pontificia Universidad Javeriana. Para iniciar debe crear una cuenta en https://www.theconstructsim.com/rds-ros-development-studio/ y abrir un nuevo Rosject (project) con la configuracion basica.
+
 Abrimos una nueva terminal en la pestaña Tools.
 
-## Configurar el Workspace 
+## Configurar el Workspace
 
-Cada aplicaion de ROS debe ejecutarse en su propio workspace para evitar conflictos entre versiones u otros proyectos.
-Cuando abrimos el proyecto de ROS en el ROS Development Studio, un workspace de catkin esta preconfigurado y solo debemos verificar que este bien establecido.
+Cada aplicación de **ROS** debe ejecutarse en su propio workspace para evitar conflictos entre versiones u otros proyectos.
+
+Cuando abrimos el proyecto de **ROS** en el ROS Development Studio, un workspace de catkin esta pre-configurado y solo debemos verificar que este bien establecido.
+
 En la terminal escribimos:
+
 ```
+
 $ ls
+
 ```
-Aparece la lista de carpetas y archivos, debe aparecer una carpera catkin_ws, entramos a ella con:
+
+Aparece la lista de carpetas y archivos, debe aparecer una carpeta catkin_ws, entramos a ella con:
+
 ```
+
 $ cd catkin_ws
+
 $ ls
-```
-aparece la lista de carpetas que deben incluir:
-* build
-* devel
-* src
 
-Si estas carpetas no aparecen, se debe correr el comando ``` catkin_make ``` para crear el workspace.
-
-Adicional se debe executar (source) el archivo devel/setup.bash para que el workspace quede activo y aplique los cambios.
 ```
+
+Aparece la lista de carpetas que deben incluir:
+
+- build
+- devel
+- src
+
+Si estas carpetas no aparecen, se debe correr el comando `catkin_make` para crear el workspace.
+
+Adicional se debe ejecutar (source) el archivo devel/setup.bash para que el workspace quede activo y aplique los cambios.
+
+```
+
 $ source devel/setup.bash
+
 ```
-Finalmente, verificamos que nuestro workspace apunte a la instalacion de ROS con el siguiente comando:
+
+Finalmente, verificamos que nuestro workspace apunte a la instalación de **ROS** con el siguiente comando:
+
 ```
+
 $ echo $ROS_PACKAGE_PATH
+
 /home/user/catkin_ws/src:/home/user/simulation_ws/src:/home/simulations/public_sim_ws/src:/opt/ros/kinetic/share
+
 ```
 
 ## Navegar por el sistema de archivos ROS
 
+Los paquetes son la unidad de organización principales de ROS. Cada paquete puede contener bibliotecas, ejecutables, scripts u otros elementos. Los paquetes están asociados a un manifiesto (package.xml) el cual contiene descripción del paquete y sirve para definir dependencias entre paquetes y para capturar meta información sobre el paquete como versión, mantenedor, licencia, etc.
 
-Los paquetes son la unidad de organización principales de ROS. Cada paquete puede contener bibliotecas, ejecutables, scripts u otros elementos. Los paquetes estan asociados a un manifiesto (package.xml) el cual contiene descripción del paquete y sirve para definir dependencias entre paquetes y para capturar metainformación sobre el paquete como versión, mantenedor, licencia, etc.
-
-En un proyecto complejo se pueden usar muchos paquetes lo que hace que navegar usando comandos de consola como ```cd``` o ```ls``` sea muy dificil. Por esta razon, ROS tiene su propio sistema de navegacion basado en comandos pero enfocado a encontrar paquetes sin tener que conocer o especificar la ruta.
+En un proyecto complejo se pueden usar muchos paquetes lo que hace que navegar usando comandos de consola como `cd` o `ls` sea muy difícil. Por esta razón, **ROS** tiene su propio sistema de navegación basado en comandos pero enfocado a encontrar paquetes sin tener que conocer o especificar la ruta.
 
 Intente los siguientes comando:
+
 ```
 $ rospack find rospy
-$ roscd roscpp
-$ rosls rospy
 
+$ roscd roscpp
+
+$ rosls rospy
 ```
 
-El primer comando rospack find devuelve la ruta del paquete solo con su nombre.
-El comando roscd permite entrar al directorio (carpeta) del paquete solo por su nombre. Tambien funciona con subcarpetas.
-El comando rosls devuelve la lista de carpetas y archivos que contiene un paquete.
+- El primer comando `rospack find` devuelve la ruta del paquete solo con su nombre.
 
-los paquete roscpp y rospy permiten correr funciones de ROS desde c++ y python respectivamente, se veran mas adelante.
+- El comando `roscd` permite entrar al directorio (carpeta) del paquete solo por su nombre. También funciona con subcarpetas.
 
-cierre la terminal y abra una nueva para el siguiente paso.
+- El comando `rosls` devuelve la lista de carpetas y archivos que contiene un paquete.
+
+Los paquete _roscpp_ y _rospy_ permiten correr funciones de **ROS** desde C++ y python respectivamente; se verán mas adelante.
+
+Cierre la terminal y abra una nueva para el siguiente paso.
 
 ## Autocompletado por medio de TAP
-una funcion muy util de ROS para hacer mas rapido el uso de la terminal de comandos, es el autocompletado por medio de la tecla Tab, con esto, solo es encesario escribir las primeras letras de cada nombre y presionar Tab para que se complete el resto o se muestren las opciones cuando hay mas de una.
 
-En la nueva terminal escriba los siguiente pero presionando Tab dos veces al final.
+Una función muy útil de **ROS** para hacer mas rápido el uso de la terminal de comandos, es el autocompletado por medio de la tecla Tab. Con esto, solo es necesario escribir las primeras letras de cada nombre y presionar Tab para que se complete el resto o se muestren las opciones cuando hay mas de una.
+
+En la nueva terminal escriba los siguiente pero presionando Tab **dos** veces al final.
+
 ```
+
 $ rosls rosc
+
 ```
-Vera que se muestran todos los paquetes que empiezan por ```rosc```, ahora escriba lo siguente y presiones una vez Tab.
+
+Vera que se muestran todos los paquetes que empiezan por `rosc`, ahora escriba lo siguiente y presiones una vez Tab.
+
 ```
+
 $ rosls roscpp_s
+
 ```
-Vera que se completa ```rosls roscpp_serialization``` que es la unica opcion para completar.
+
+Vera que se completa `rosls roscpp_serialization` que es la única opción para completar.
 
 De esta forma se pueden completar complicadas rutas de archivos para ejecutar los comandos correspondiente.
 
-##Crear un paquete propio
-Ahora veremos como crear nuestro propio paquete donde pondremos algo de codigo para nuestra aplicacion.
+## Crear un paquete propio
 
-lo primero es ir al directorio src:
+Ahora veremos como crear nuestro propio paquete donde pondremos algo de código para nuestra aplicación.
+
+Lo primero es ir al directorio src:
+
 ```
+
 $ cd ~/catkin_ws/src
+
 ```
 
-Ahora usamos la funcion catkin_create_pkg para crear una nuevo paquete, la sintaxis de la funciones es la siguiente:
+Ahora usamos la función catkin_create_pkg para crear una nuevo paquete, la sintaxis de la funciones es la siguiente:
+
 ```
+
 # catkin_create_pkg <nombre> [depend1] [depend2] [depend3]
+
 ```
-(lo anterior es un ejemplo, no intentes correrlo en la terminal)
 
-las dependencias son otros paquetes que nuestro paquete va a usar.
+ATENCIÓN: **(Lo anterior es un ejemplo, no intentes correrlo en la terminal)**
 
-pruebe crear un paquete llamado rospuj con rospy como dependencia.
+Las dependencias son otros paquetes que nuestro paquete va a usar.
+
+Pruebe crear un paquete llamado **_rospuj_** con _rospy_ como dependencia.
 
 ### Aplicar cambios al workspace
-cadaque se realiza un cambio en el paquete(o se crea un paquete) es necesario ejecutar los siguietnes comandos para que estos cambios sean tenidos en cuenta en la ejecucion del paquete. Esto es debido a que ROS no leer directamente los archivos sino que editamos sino sus correspondientes ejecutables.
+
+Cada que se realiza un cambio en el paquete (o se crea un paquete) es necesario ejecutar los siguientes comandos para que estos cambios sean tenidos en cuenta en la ejecución del paquete. Esto es debido a que ROS no lee directamente los archivos que editamos, por el contrario solo lee los ejecutables.
+
 ```
+
 $ cd ~/catkin_ws
+
 $ catkin_make
+
 $ . ~/catkin_ws/devel/setup.bash
-$ source /opt/ros/kinetic/setup.bash  
+
+$ source /opt/ros/kinetic/setup.bash
+
 ```
 
 ## Nodos
-Conceptos basicos de la comunicacion en ROS:
 
-* Nodos (node): un nodo es un ejecutable que utiliza ROS para comunicarse con otros nodos.
-* Mensajes (messages): tipo de datos en ROS utilizado al suscribirse o publicar en un tema.
-* Temas (topic): los nodos pueden publicar mensajes en un tema, así como suscribirse a un tema para recibir mensajes.
-* Maestro (master): servicio encargado del registro de nombres en ROS (es decir, ayuda a los nodos a encontrarse)
-* rosout: equivalente ROS de stdout / stderr (funciones de terminal de linux)
-* roscore: Master + rosout + servidor de parámetros (el servidor de parámetros se presentará más adelante)
+Conceptos básicos de la comunicación en ROS:
 
-Un nodo es un archivo ejecutable dentro de un paquete ROS. Los nodos ROS utilizan **rospy** o **roscpp** para comunicarse con otros nodos. Los nodos pueden publicar o suscribirse a un tema. Los nodos también pueden proporcionar o usar un Servicio.
+- **Nodos (node):** un nodo es un ejecutable que utiliza ROS para comunicarse con otros nodos.
 
-### roscore
-Para utilizar la infraestructura de comunicacion de ROS es necesario que roscore este ejecutandose, esto implica tener una terminal dedicada donde se ejecuta el siguiente comando:
+- **Mensajes (messages):** Tipo de datos en ROS utilizado al suscribirse o publicar en un tema.
+
+- **Temas (topic):** Los nodos pueden publicar mensajes en un tema, así como suscribirse a un tema para recibir mensajes.
+
+- **Maestro (master):** Servicio encargado del registro de nombres en ROS (es decir, ayuda a los nodos a encontrarse)
+
+- **rosout**: Equivalente ROS de stdout / stderr (funciones de terminal de linux)
+
+- **roscore:** Master + rosout + servidor de parámetros (el servidor de parámetros se presentará más adelante)
+
+Un nodo es un archivo ejecutable dentro de un paquete ROS. Los nodos ROS utilizan _rospy_ o _roscpp_ para comunicarse con otros nodos. Los nodos pueden publicar o suscribirse a un tema. Los nodos también pueden proporcionar o usar un Servicio.
+
+### Roscore
+
+Para utilizar la infraestructura de comunicación de ROS es necesario que _roscore_ este ejecutándose, esto implica tener una terminal dedicada donde se ejecuta el siguiente comando:
+
 ```
+
 $ roscore
+
 ```
+
 Esta terminal no se debe cerrar por lo que debe abrir otras terminales para ejecutar otros comandos.
 
-### rosnode
-Rosnode es una funcion de ROS que permite obtener informacion de los nodos que estan registrados en rosmaster. Roscore debe estar corriendo para poder usar rosnode.
+### Rosnode
 
-veamos que puede hacer rosnode, ejecuta en una nueva terminal:
+_Rosnode_ es una función de ROS que permite obtener información de los nodos que están registrados en _rosmaster_. Roscore debe estar corriendo para poder usar rosnode.
+
+Veamos que puede hacer rosnode, ejecuta en una nueva terminal:
 
 ```
+
 rosnode list
-```
-esto devuelve todos los nodos que esten corriendo, en nuestro caso solo deberia mostrar ```/rosout``` que es un nodo que siempre se esta ejecutando para manejar la comunicacion.
 
-Otro comando es *rosnode info* el cual responde con la informacion del nodo solicitado. esta informacion debe ser escrita por el desarrollador.
-
-ejecute:
 ```
+
+Esto devuelve todos los nodos que se estén corriendo. En nuestro caso solo debería mostrar `/rosout` que es un nodo que siempre se esta ejecutando para manejar la comunicación.
+
+Otro comando es _rosnode info_ el cual responde con la información del nodo solicitado. Esta información debe ser escrita por el desarrollador.
+
+Ejecute:
+
+```
+
 rosnode info /rosout
+
 ```
 
-ahora veremos como activar mas nodos manualmente, pero primero vamos a iniciar la simulacion de un robot para analizar la comunicacion entre nodos.
+Ahora veremos como activar mas nodos manualmente, pero primero vamos a iniciar la simulación de un robot para analizar la comunicación entre nodos.
 
 Siga los siguientes pasos:
-1. En el ROS DE abra la pestaña *Simulations*
+
+1. En el ROS DE abra la pestaña _Simulations_
+
 2. En la opcion "world" seleccione "Empty + Wall"
+
 3. En la opcion "robot" seleccione "Rosbot"
+
 4. De click en "Start Simulation"
 
-la simulacion puede tardar varios segundos o minutos en iniciar. Una ves cargado todo el ambiente de simulacion, ejecute nuevamente ```rosnode list``` para ver todos los nodos que ahora se estan ejecutando.
-Aparecen los siguentes nodos.
+La simulación puede tardar varios segundos o minutos en iniciar. Una vez cargado todo el ambiente de simulación, ejecute nuevamente `rosnode list` para ver todos los nodos que ahora se están ejecutando.
+
+Aparecen los siguientes nodos.
+
 ```
+
 /gazebo
+
 /gmapping_node
+
 /joint_state_controller_spawner
+
 /move_base
+
 /robot_state_publisher
+
 /rosout
+
 /rviz
+
 ```
-Estos nodos iniciaron automaticamente, pero otros nodos se pueden inciar desde la terminal usando ```rosrun```, veremos mas adelante como usar este comando con los nodos que creamos.
 
-## Comunicacion por medio de topics
-ROS permite dos tipos de comunicaciones entre nodos, *Topics* y *Services*, vamos a enfocarnos primero en los topics, los servicios los estudiatemos a continuacion.
+Estos nodos iniciaron automáticamente, pero otros nodos se pueden iniciar desde la terminal usando `rosrun`, veremos mas adelante como usar este comando con los nodos que creamos.
 
-Los *Topics* permiten una comunicacion tipo PUB/SUB (publicacion - suscripcion) en la cual un nodo crea un tema (topic) y otros nodos se suscriben a el, cada que se publique un mensaje en el topic, todos los nodos suscritos pueden leerlo.
+## Comunicación por medio de topics
 
-El comando base para trabajar con *Topics* es **rostopic**. Un primer uso de este comando es la funcion de ayuda para leer otras funciones y comandos, en una nueva terminal escriba lo siguiente:
+ROS permite dos tipos de comunicaciones entre nodos, _Topics_ y _Services_, vamos a enfocarnos primero en los topics, los servicios los estudiaremos a continuación.
+
+Los _Topics_ permiten una comunicación tipo PUB/SUB (publicación - suscripción) en la cual un nodo crea un tema (topic) y otros nodos se suscriben a el, cada que se publique un mensaje en el topic, todos los nodos suscritos pueden leerlo.
+
+El comando base para trabajar con _Topics_ es **rostopic**.
+Un primer uso de este comando es la función de ayuda para leer otras funciones y comandos, en una nueva terminal escriba lo siguiente:
+
 ```
+
 $ rostopic -h
+
 ```
-veremos con detalle algunos de estos comandos.
+
+Veremos con detalle algunos de estos comandos.
 
 ### rostopic echo
-```rostopic echo``` permite ver en la terminal los mensajes publicados en un tema.
 
-Para conocer los temas que estan abiertos podemos escribir el siguiente comando:
+`rostopic echo` permite ver en la terminal los mensajes publicados en un tema.
+
+Para conocer los temas que están abiertos podemos escribir el siguiente comando:
+
 ```
+
 $ rostopic list
-```
-Esto desplega una lista de los temas abiertos, ahora vamos a leer el tema */scan* el cual es usado por el robot para publicar constantemente los valores leidos por el sensor laser de 360 grados.
 
 ```
+
+Esto despliega una lista de los temas abiertos, ahora vamos a leer el tema _/scan_ el cual es usado por el robot para publicar constantemente los valores leídos por el sensor laser de 360 grados.
+
+```
+
 $ rostopic echo /scan
-```
-No te alarmes!, apareceran muchas lineas de informacion, es normal solo tienes que presionar *Ctrl + Z* para dejar de leer.
 
-Esto nos muestra un ejemplo de un mensaje publicado constantemente en un tema. Para usar esa informacion es necesario crear una suscripcion, eso lo haremos mas adelante.
+```
+
+No te alarmes!, aparecerán muchas lineas de información, es normal solo tienes que presionar _Ctrl + Z_ para dejar de leer.
+
+Esto nos muestra un ejemplo de un mensaje publicado constantemente en un tema. Para usar esa información es necesario crear una suscripción, eso lo haremos mas adelante.
 
 ### Tipos de mensaje
-los temas transmiten mesajes, un mensaje tiene una estructura de datos compleja que puede ir desde un valor unico hasta un conjunto de datos de diferentes tipos uncluidos areglos y listas.
 
-Es necesario conocer el tipo de mensaje asociado a un tema para poder usarlo, ya sea para interpretar los datos y usarlos en una aplicacion o para poder enviar un mensaje con la estructura correcta.
+Los temas transmiten mensajes, un mensaje tiene una estructura de datos compleja que puede ir desde un valor único hasta un conjunto de datos de diferentes tipos incluidos arreglos y listas.
 
-Para conocer el tipo de mensaje asociado a un tema, se usa el comando ```rostopic type [topic]```. Podemos usarlo con el tema ```/scan``` asi:
+Es necesario conocer el tipo de mensaje asociado a un tema para poder usarlo, ya sea para interpretar los datos y usarlos en una aplicación o para poder enviar un mensaje con la estructura correcta.
+
+Para conocer el tipo de mensaje asociado a un tema, se usa el comando `rostopic type [topic]`. Podemos usarlo con el tema `/scan` así:
 
 ```
+
 $ rostopic type /scan
+
 # sensor_msgs/LaserScan
+
 ```
-Ahora podemos usar ```rosmsg show [message topic]``` para conocer la estructura detallada del mensaje asi:
+
+Ahora podemos usar `rosmsg show [message topic]` para conocer la estructura detallada del mensaje así:
+
 ```
+
 $ rosmsg show sensor_msgs/LaserScan
+
 ```
+
 Respuesta:
+
 ```
+
 std_msgs/Header header
-  uint32 seq
-  time stamp
-  string frame_id
+
+uint32 seq
+
+time stamp
+
+string frame_id
+
 float32 angle_min
+
 float32 angle_max
+
 float32 angle_increment
+
 float32 time_increment
+
 float32 scan_time
+
 float32 range_min
+
 float32 range_max
+
 float32[] ranges
+
 float32[] intensities
-```
-Estos muestra que hay varios datos de los cuales nos puede interesar que el dato ```ranges``` es un arreglo de datos tipo float32, este dato contiene los valores leidos por el sensor desde *angle_min* a *angle_max aumentando* lo indicado en *angle_increment*.
 
-Como otro ejemplo, podemos revisar la estructura del tema */cmd_vel*, este tema es usado para enviar mensajes de movimiento al robot.
 ```
+
+Estos muestra que hay varios datos de los cuales nos puede interesar que el dato `ranges` es un arreglo de datos tipo float32, este dato contiene los valores leídos por el sensor desde _angle_min_ a _angle_max aumentando_ lo indicado en _angle_increment_.
+
+Como otro ejemplo, podemos revisar la estructura del tema _/cmd_vel_, este tema es usado para enviar mensajes de movimiento al robot.
+
+```
+
 $ rostopic type /cmd_vel
-```
-respuesta:
-```
-geometry_msgs/Twist
-```
-Ahora buscamos la estructura del mensaje:
-```
-$ rosmsg show geometry_msgs/Twist
-```
-Respuesta:
-```
-geometry_msgs/Vector3 linear
-  float64 x
-  float64 y
-  float64 z
-geometry_msgs/Vector3 angular
-  float64 x
-  float64 y
-  float64 z
-```
-Esto corresponde a un mensaje del tipo: '[x, y, z]' '[x, y, z]' donde el primer vector es la velocidad y el segundo la rotacion.
 
-### rostopic pub
-el comando ```rostopic pub``` permite escribir un mensaje en un tema desde la terminal.
+```
+
+Respuesta:
+
+```
+
+geometry_msgs/Twist
+
+```
+
+Ahora buscamos la estructura del mensaje:
+
+```
+
+$ rosmsg show geometry_msgs/Twist
+
+```
+
+Respuesta:
+
+```
+
+geometry_msgs/Vector3 linear
+
+float64 x
+
+float64 y
+
+float64 z
+
+geometry_msgs/Vector3 angular
+
+float64 x
+
+float64 y
+
+float64 z
+
+```
+
+Esto corresponde a un mensaje del tipo: '[x, y, z]' '[x, y, z]' donde el primer vector es la velocidad y el segundo la rotación.
+
+### Rostopic pub
+
+el comando `rostopic pub` permite escribir un mensaje en un tema desde la terminal.
 
 La sintaxis del comando es:
+
 ```
+
 rostopic pub [topic] [msg_type] [args]
-```
-donde.
-* [topic] es el nombre del tema tal como aparece al usar ```rostopic list```
-* [msg_type] es el tipo de mensaje tal como aparece al usar ```rostopic type```
-* [args] es el contenido del mesaje que debe tener la misma estructura mostra al usar ```rosmsg show```
 
-ahora usemos este comando para mover el robot. en la terminal escribe:
 ```
+
+Donde,
+
+- [topic] es el nombre del tema tal como aparece al usar `rostopic list`
+
+- [msg_type] es el tipo de mensaje tal como aparece al usar `rostopic type`
+
+- [args] es el contenido del mesaje que debe tener la misma estructura mostra al usar `rosmsg show`
+
+Ahora usemos este comando para mover el robot. en la terminal escribe:
+
+```
+
 rostopic pub -1 /cmd_vel geometry_msgs/Twist -- '[0.6, 0.0, 0.0]' '[0.0, 0.0, 2.0]'
+
 ```
 
-El atributo ```-1``` indica que envia un solo mensaje y termina la comunicacion.
+El atributo `-1` indica que envía un solo mensaje y termina la comunicación.
 
-En el simulador podra ver como el robot inicia su movimiento donde '[0.6, 0.0, 0.0]' indica una velocidad lineal en X y '[0.0, 0.0, 2.0]' una velocidad de rotacion en Z. Ahora tome un tiempo para jugar un poco con el robot cambiando estos valores.
+En el simulador podrá ver como el robot inicia su movimiento donde '[0.6, 0.0, 0.0]' indica una velocidad lineal en X y '[0.0, 0.0, 2.0]' una velocidad de rotación en Z. Ahora tome un tiempo para jugar un poco con el robot cambiando estos valores.
 
-Ahora podemos introducir la comunicacion por servicios en ROS con un servicio que permite reiniciar la simulacion, si el robot se perdio y se estrello, intente reiniciar con alguno de estos comandos:
+Ahora podemos introducir la comunicación por servicios en ROS con un servicio que permite reiniciar la simulación, si el robot se perdió y se estrello, intente reiniciar con alguno de estos comandos:
+
 ```
+
 $ rosservice call /gazebo/reset_world
+
 $ rosservice call /gazebo/reset_simulation
+
 ```
+
 si no funcionan, es necesario reiniciar el simulador.
 
-## Comunicacion por medio de servicios
-La comunicacion por medio de servicios utiliza una arquitectura de tipo Cliente/Servidor en la cual un nodo genera un solicitud (**request**) y el otro responde (**response**).
+## Comunicación por medio de servicios
 
-Al igual que con rostopic, tenemos la funcion rosservice que permite interactuar con los servicios de los nodos desde la terminal.
+La comunicación por medio de servicios utiliza una arquitectura de tipo Cliente/Servidor en la cual un nodo genera un solicitud (**request**) y el otro responde (**response**).
 
-iniciemos con la funcion de ayuda:
+Al igual que con _rostopic_, tenemos la función _rosservice_ que permite interactuar con los servicios de los nodos desde la terminal.
+
+Iniciemos con la función de ayuda:
+
 ```
+
 $ rosservice -h
-```
-esto depliega todas las funciones del comando rosservice.
 
-ahora podemos utilizar tambien rosservice list para ver los servicios disponibles:
 ```
+
+Esto despliega todas las funciones del comando rosservice.
+
+Ahora podemos utilizar también rosservice list para ver los servicios disponibles:
+
+```
+
 $ rosservice list
-```
-En la lista que se despliega vemos que aparecen los servicios /gazebo/reset_world y /gazebo/reset_simulation que usamos en el punto anterior para reiniciar la simulacion. Para usar los servicios, deben llamarse con el mismo nombre que aparecen en esta lista. 
 
-para llamar los servicios desde la terminal, usamos el comando ```rosservice call``` con el nomnbre del servicio. Esemos esto para obtener los Loggers del estado del robot.
 ```
+
+En la lista que se despliega vemos que aparecen los servicios /gazebo/reset_world y /gazebo/reset_simulation que usamos en el punto anterior para reiniciar la simulacion. Para usar los servicios, deben llamarse con el mismo nombre que aparecen en esta lista.
+
+para llamar los servicios desde la terminal, usamos el comando `rosservice call` con el nombre del servicio. Hacemos esto para obtener los _Loggers_ del estado del robot.
+
+```
+
 $ rosservice call /robot_state_publisher/get_loggers
+
 ```
-Para entender el formato de los datos que este servicio respondia podemos usar la funcion ```rosservice type [service]``` 
+
+Para entender el formato de los datos que este servicio respondía podemos usar la función `rosservice type [service]`
+
 ```
+
 $ rosservice type /robot_state_publisher/get_loggers | rossrv show
+
 ```
-Que nos muestra que el mensaje de respuesta es un lintado de logger con el nombre y el nivel.
 
-## Crear un nodo en python
-Ahora ya entramos a la parte activa del tutorial, la idea de este seccion es crear un script que funcione como un nodo de ROS y se encarge de manejar el robot para que evada ostaculos.
+Que nos muestra que el mensaje de respuesta es un listado de _logger_ con el nombre y el nivel.
 
-lo primero que debemos hacer es crear una carpeta dentro de nuestro paquete /rospuj, en esta carpeta creamos el archivo de python.
+## Crear un nodo en Python
 
-desde la terminal podemos crear la carpeta con:
+Ahora ya entramos a la parte activa del tutorial, la idea de este sección es crear un Script que funcione como un nodo de ROS y se encargue de manejar el robot para que evada obstáculos.
+
+Lo primero que debemos hacer es crear una carpeta dentro de nuestro paquete /rospuj, en esta carpeta creamos el archivo de Python.
+
+Desde la terminal podemos crear la carpeta con:
+
 ```
+
 $ roscd rospuj
+
 $ mkdir scripts
+
 ```
-ahora en el ROS DS vamos a la pestaña Tools y seleccionamos IDE, con esto se abre un editor donde podemos seleccionar la carpeta que creamos, damos click derecho y seleccionamos *New File*, le ponemos el nombre *mydriver.py* y le damos OK.
+
+Ahora en el ROS DS vamos a la pestaña Tools y seleccionamos IDE, con esto se abre un editor donde podemos seleccionar la carpeta que creamos, damos click derecho y seleccionamos _New File_, le ponemos el nombre _mydriver.py_ y le damos OK.
 
 Ahora abrimos el archivos y pegamos lo siguiente:
+
 ```
-#!/usr/bin/env python  
-import rospy  #todo nodo de ROS en python debe importar rospy
-from sensor_msgs.msg import LaserScan  #importa los tipos de mensaje
+
+#!/usr/bin/env python
+
+import rospy #todo nodo de ROS en python debe importar rospy
+
+from sensor_msgs.msg import LaserScan #importa los tipos de mensaje
+
 from geometry_msgs.msg import Twist
+
 # le indicamos a rospy el nombre del nodo.
-rospy.init_node('evadir1')  #con este nombre se registra en el rosmaster
+
+rospy.init_node('evadir1') #con este nombre se registra en el rosmaster
+
+
 
 #Creamos un objeto para publicar en el topic /cmd_vel, Twist es el tipo de mensaje
-pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1) 
+
+pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+
+
 
 #rospy.rate() ndica la frecuencia en Hz con la que se va a repetir el loop de control.
+
 rate = rospy.Rate(2)
 
+
+
 #crea un objeto para guardar el mensaje de tipo Twist
+
 vel = Twist()
 
+
+
 #Se da un valor inicial a la velocidad del robot y la distancia del sensor
+
 vel.linear.x = 0.3
+
 vel.angular.z = 0
+
 d = 0.1
 
+
+
 #publica a velocidad (se envia al robot)
+
 pub.publish(vel)
 
+
+
 #creamos la funcion que haga girar el robot cuando detecte un objeto
+
 def turn(msg): #el unico argumento es el arreglo de lecturas del laser
-    d = msg.ranges[0] #optiene la lectura de laser en la primera posicion del arreglo
-    # d es la distancia detectada por el laser junto en frente del robot en m
-    if d < 0.7:  #se hay un bjeto muy cerca, gira
-        vel.angular.z = 0.5
-        vel.linear.x = 0
-    else:  #si no, avanza
-        vel.linear.x = 0.3
-        vel.angular.z = 0
-    pub.publish(vel) #actualiza la velocidad en el robot
+
+d = msg.ranges[0] #optiene la lectura de laser en la primera posicion del arreglo
+
+# d es la distancia detectada por el laser junto en frente del robot en m
+
+if d < 0.7: #se hay un bjeto muy cerca, gira
+
+vel.angular.z = 0.5
+
+vel.linear.x = 0
+
+else: #si no, avanza
+
+vel.linear.x = 0.3
+
+vel.angular.z = 0
+
+pub.publish(vel) #actualiza la velocidad en el robot
+
 """
+
 se crea una suscripcion al topic /scan (medidor laser de 360 grados.
+
 el segundo argumento es el tipo de mensaje LaserScan (se importo)
+
 el tercer argumento es la funcion que atiende el mensaje recibido "callback"
+
 """
+
+
 
 rospy.Subscriber("/scan", LaserScan, turn)
 
+
+
 #inicia la ejecucion periodica cada 0.5s segun se indique en rospy.rate
+
 rospy.spin()
+
 ```
 
-Ahora se debe hacer ejecutable el script, para esto escribimos en la terminal:
+Ahora se debe hacer ejecutable el Script, para esto escribimos en la terminal:
+
 ```
+
 $ chmod +x mydriver.py
+
 ```
 
-### reconstruir el workspace
+### Reconstruir el workspace
+
 Cada que se realiza un cambio en los paquetes se debe reconstruir el workspace, en este caso se a creado (o editado) un nodo.
 
 ```
+
 $ cd ~/catkin_ws
-$ catkin_make 
+
+$ catkin_make
+
 $ source ./devel/setup.bash
-```
-Finalmente, ejecutamos en nodo utilizando ```rosrun```.
 
 ```
-rosrun rospuj mydriver.py
+
+Finalmente, ejecutamos en nodo utilizando `rosrun`.
+
 ```
+
+rosrun rospuj mydriver.py
+
+```
+
 Podra ver en el simulador (si todo sale bien) que el robot se mueve y gira cuando detecta algun obstaculo.
 
 ## Actividad 1
 
-Modifique el archivo mydriver.py para que el robot mejore la evacion de obstaculos utilizando un rango mayor del LaserScan y haciendo que gire mas rapido cuanto mas cerca este del obstaculo.
+Modifique el archivo mydriver.py para que el robot mejore la evasión de obstáculos utilizando un rango mayor del LaserScan y haciendo que gire mas rápido cuanto mas cerca este del obstáculo.
 
-
-
-
+V1.02
