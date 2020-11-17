@@ -425,7 +425,7 @@ $ rosservice call /gazebo/reset_simulation
 
 ```
 
-si no funcionan, es necesario reiniciar el simulador.
+si no funcionan, es necesario reiniciar el simulador. En ocaciones, estos comandos puede mover de forma extraña las partes del modelo.
 
 ## Comunicación por medio de servicios
 
@@ -483,7 +483,7 @@ Desde la terminal podemos crear la carpeta con:
 
 $ roscd rospuj
 
-$ mkdir scripts
+$ mkdir scriptsnano
 
 ```
 
